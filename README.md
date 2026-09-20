@@ -3,10 +3,12 @@ An Obsidian plugin that allows you to assign different accent colors and themes 
 
 ### Context menu
 You can customize this plugin directly from the file explorer. Just right-click on a folder you want to customize and you're done.
+
 ![context-menu-1](images/screenshot-file_explorer.png)
 
 
 You will be presented with this simple settings tab:
+
 ![context-menu-customization](images/screenshot-customize.png)
 
 

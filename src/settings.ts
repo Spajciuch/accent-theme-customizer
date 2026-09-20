@@ -31,29 +31,19 @@ export class CustomizerSettingTab extends PluginSettingTab {
 	}
 
 	getSettingDefinitions() {
-		return [{
-			name: 'Folder mappings',
-			render: (setting: Setting) => {
-				setting.settingEl.empty();
-				this.renderMappings(setting.settingEl, () => this.updateDeclarativeSettings());
-			},
-		}];
+		return [];
 	}
 
-	private updateDeclarativeSettings(): void {
-		(this as unknown as { update: () => void }).update();
-	}
-
-	display(): void {
+	display(editingId = -1): void {
 		this.containerEl.empty();
-		this.renderMappings(this.containerEl, () => this.display());
+		this.renderMappings(this.containerEl, (id = -1) => this.display(id), editingId);
 	}
 
-	private renderMappings(containerEl: HTMLElement, rerender: () => void | Promise<void>): void {
+	private renderMappings(containerEl: HTMLElement, rerender: (id?: number) => void | Promise<void>, editingId = -1): void {
 		const { plugin } = this;
 
 		plugin.settings.mappings.forEach(mapping => {
-			createMappingEntry(containerEl, mapping, plugin, rerender);
+			createMappingEntry(containerEl, mapping, plugin, rerender, editingId);
 		});
 
 		new Setting(containerEl)

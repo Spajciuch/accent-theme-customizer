@@ -1,4 +1,4 @@
-# Accent & Theme Customizer
+# Accent and Theme Customizer
 An Obsidian plugin that allows you to assign different accent colors and themes to different folders!
 
 ### Context menu

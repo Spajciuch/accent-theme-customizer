@@ -1,4 +1,4 @@
-import { App, ButtonComponent, PluginSettingTab, Setting } from 'obsidian';
+import { Setting } from 'obsidian';
 import { folderCustomizationMapping } from '../settings';
 import ATCustomizerPlugin from '../main';
 import { FolderSuggest } from '../utils/folderSuggest';
@@ -16,10 +16,10 @@ export function createMappingEntry(containerEl: HTMLElement, mapping: folderCust
                 window.setTimeout(() => input.inputEl.focus(), 50);
                 input.inputEl.addEventListener("keydown", (e) => {
                     if (e.key === "Enter") {
-                        plugin.saveSettings();
-                        renderSettings();
+                        void plugin.saveSettings();
+                        void renderSettings();
                     } else if (e.key === "Escape") {
-                        renderSettings();
+                        void renderSettings();
                     }
                 });
                 return input;
@@ -27,7 +27,7 @@ export function createMappingEntry(containerEl: HTMLElement, mapping: folderCust
             .addButton(b => {	// Confirm 
                 b.setIcon('checkmark').onClick(async () => {
                     await plugin.saveSettings();
-                    renderSettings();
+                        void renderSettings();
                 })
             })
     } else {	// Normal display
@@ -35,7 +35,7 @@ export function createMappingEntry(containerEl: HTMLElement, mapping: folderCust
             .setName(mapping.name)
             .addButton(b => {
                 b.setIcon('pencil').setTooltip("Edit name").onClick(() => {
-                    renderSettings(mapping.id);
+                    void renderSettings(mapping.id);
                 })
             })
     }
@@ -53,9 +53,9 @@ export function createMappingEntry(containerEl: HTMLElement, mapping: folderCust
 
             new FolderSuggest(input.inputEl, plugin.app.vault, plugin.app, (value: string) => {
                 mapping.folder = value;
-                plugin.saveSettings();
+                void plugin.saveSettings();
 
-                renderSettings();
+                void renderSettings();
             });
 
             return input;
@@ -106,16 +106,16 @@ export function createMappingEntry(containerEl: HTMLElement, mapping: folderCust
                 }
 
                 await plugin.saveSettings();
-                renderSettings();
+            void renderSettings();
             })
         })
         // Button to remove mapping
         .addButton(b => {
             b.setIcon('trash').onClick(async () => {
-                var mappings = plugin.settings.mappings;
-                await plugin.settings.mappings.splice(mappings.indexOf(mapping), 1);
+                const mappings = plugin.settings.mappings;
+                mappings.splice(mappings.indexOf(mapping), 1);
 
-                renderSettings();
+                void renderSettings();
             });
         })
 }

@@ -2,21 +2,20 @@ import {
 	Modal,
 	Notice,
 	Plugin,
-	Setting,
 	TFile,
 	WorkspaceLeaf,
 	FileView,
 	normalizePath,
-	App,
 	TFolder,
-	ButtonComponent
+	ButtonComponent,
+	App
 } from 'obsidian';
 
 import {
 	DEFAULT_SETTINGS,
 	customizerSettings,
 	folderCustomizationMapping,
-	SampleSettingTab,
+	CustomizerSettingTab,
 } from './settings';
 
 declare module "obsidian" {
@@ -50,7 +49,7 @@ export default class ATCustomizerPlugin extends Plugin {
 						item
 							.setTitle('Apply custom theme / accent')
 							.setIcon('brush')
-							.onClick(async () => {
+							.onClick(() => {
 								new ATCustomizerModal(this.app, this, file.path, mapping => { this.applyCustomization(mapping) }).open();
 							});
 					});
@@ -59,12 +58,7 @@ export default class ATCustomizerPlugin extends Plugin {
 		);
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(
-			window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000),
-		);
+		this.addSettingTab(new CustomizerSettingTab(this.app, this));
 	}
 
 	onunload() { }
@@ -80,14 +74,14 @@ export default class ATCustomizerPlugin extends Plugin {
 
 		this.lastProcessedPath = path;
 
-		var mapping = this.pickMappingForPath(path);
+		const mapping = this.pickMappingForPath(path);
 		this.applyCustomization(mapping);
 	}
 
-	async applyCustomization(mapping: folderCustomizationMapping) {
+	applyCustomization(mapping: folderCustomizationMapping): void {
 		try {
 			if (mapping.accent !== "") {
-				var color = await this.hexToHSL(mapping.accent);
+				const color = this.hexToHSL(mapping.accent);
 
 				document.body.style.setProperty("--accent-h", color.h);
 				document.body.style.setProperty("--accent-s", `${color.s}%`);
@@ -98,8 +92,7 @@ export default class ATCustomizerPlugin extends Plugin {
 				this.app.customCss.setTheme(mapping.theme);
 			}
 
-		} catch (e) {
-			console.error(e);
+		} catch {
 			new Notice("An error occured while applying theme and/or accent color");
 		}
 	}
@@ -116,8 +109,8 @@ export default class ATCustomizerPlugin extends Plugin {
 		return { name: ``, folder: ``, theme: ``, accent: ``, id: -1 };
 	}
 
-	async handleActiveLeadChange(leaf: WorkspaceLeaf | null) {
-		this.handleFileOpen(this.getFileForLeaf(leaf));
+	handleActiveLeadChange(leaf: WorkspaceLeaf | null): void {
+		void this.handleFileOpen(this.getFileForLeaf(leaf));
 	}
 
 	private getFileForLeaf(leaf: WorkspaceLeaf | null): TFile | null {
@@ -144,17 +137,17 @@ export default class ATCustomizerPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 
-	async hexToHSL(H: any) {
+	hexToHSL(H: string): { h: string; s: string; l: string } {
 		// Convert hex to RGB first
-		let r: any = 0, g: any = 0, b: any = 0;
+		let r = 0, g = 0, b = 0;
 		if (H.length == 4) {
-			r = "0x" + H[1] + H[1];
-			g = "0x" + H[2] + H[2];
-			b = "0x" + H[3] + H[3];
+			r = Number.parseInt(H.slice(1, 2).repeat(2), 16);
+			g = Number.parseInt(H.slice(2, 3).repeat(2), 16);
+			b = Number.parseInt(H.slice(3, 4).repeat(2), 16);
 		} else if (H.length == 7) {
-			r = "0x" + H[1] + H[2];
-			g = "0x" + H[3] + H[4];
-			b = "0x" + H[5] + H[6];
+			r = Number.parseInt(H.slice(1, 3), 16);
+			g = Number.parseInt(H.slice(3, 5), 16);
+			b = Number.parseInt(H.slice(5, 7), 16);
 		}
 		// Then to HSL
 		r /= 255;
@@ -190,7 +183,7 @@ export default class ATCustomizerPlugin extends Plugin {
 		s = Math.round(s);
 		l = Math.round(l);
 
-		var obj = {
+		const obj = {
 			h: h.toString(),
 			s: s.toString(),
 			l: l.toString()
@@ -199,25 +192,19 @@ export default class ATCustomizerPlugin extends Plugin {
 		return obj;
 	}
 
-	async setTheme() {
-
-	}
 }
 
 async function findOrCreateMapping(plugin: ATCustomizerPlugin, path: string) {
-	plugin: ATCustomizerPlugin;
+	const mappings = plugin.settings.mappings;
 
-	var mappings = plugin.settings.mappings;
-
-	var result = mappings.find(e => e.folder == path);
-	console.log(path)
+	const result = mappings.find(e => e.folder == path);
 
 	if (result !== undefined) {
 		return result;
 	}
 
-	var lastIndex = -1;
-	var last = 0;
+	let lastIndex = -1;
+	let last = 0;
 
 	mappings.forEach(mapping => {
 		if (mapping.name.startsWith("Mapping") && mappings.indexOf(mapping) > lastIndex && !isNaN(Number(mapping.name.slice(8)))) {
@@ -226,7 +213,7 @@ async function findOrCreateMapping(plugin: ATCustomizerPlugin, path: string) {
 		}
 	})
 
-	var newMapping = { name: `Mapping ${last + 1}`, folder: path, theme: ``, accent: ``, id: plugin.settings.lastId + 1 };
+	const newMapping = { name: `Mapping ${last + 1}`, folder: path, theme: ``, accent: ``, id: plugin.settings.lastId + 1 };
 	plugin.settings.mappings.push(newMapping);
 	plugin.settings.lastId++;
 

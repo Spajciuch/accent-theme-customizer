@@ -1,4 +1,4 @@
-import { App, ButtonComponent, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting } from 'obsidian';
 import ATCustomizerPlugin from './main';
 import { createMappingEntry } from './UI/settingsElements';
 
@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: customizerSettings = {
 	debug: false
 };
 
-export class SampleSettingTab extends PluginSettingTab {
+export class CustomizerSettingTab extends PluginSettingTab {
 	plugin: ATCustomizerPlugin;
 
 	constructor(app: App, plugin: ATCustomizerPlugin) {
@@ -32,7 +32,7 @@ export class SampleSettingTab extends PluginSettingTab {
 
 	display(): void {
 		const { containerEl } = this;
-		var plugin = this.plugin;
+		const plugin = this.plugin;
 
 		renderSettings();
 
@@ -48,9 +48,9 @@ export class SampleSettingTab extends PluginSettingTab {
 					b
 						.setButtonText("Add mapping")
 						.onClick(async () => {
-							var mappings = plugin.settings.mappings;
-							var lastIndex = -1;
-							var last = 0;
+							const mappings = plugin.settings.mappings;
+							let lastIndex = -1;
+							let last = 0;
 
 							mappings.forEach(mapping => {
 								if (mapping.name.startsWith("Mapping") && mappings.indexOf(mapping) > lastIndex && !isNaN(Number(mapping.name.slice(8)))) {
@@ -59,7 +59,7 @@ export class SampleSettingTab extends PluginSettingTab {
 								}
 							})
 
-							var newMapping = { name: `Mapping ${last + 1}`, folder: ``, theme: ``, accent: ``, id: plugin.settings.lastId + 1 };
+							const newMapping = { name: `Mapping ${last + 1}`, folder: ``, theme: ``, accent: ``, id: plugin.settings.lastId + 1 };
 							plugin.settings.mappings.push(newMapping);
 							plugin.settings.lastId++;
 

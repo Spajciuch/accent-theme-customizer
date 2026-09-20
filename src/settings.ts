@@ -12,16 +12,12 @@ export interface folderCustomizationMapping {
 
 export interface customizerSettings {
 	mappings: folderCustomizationMapping[];
-	defaultTheme: string;
-	defaultAccent: string;
 	lastId: number;
 	debug: boolean;
 }
 
 export const DEFAULT_SETTINGS: customizerSettings = {
 	mappings: [],
-	defaultTheme: "",
-	defaultAccent: "",
 	lastId: 0,
 	debug: false
 };

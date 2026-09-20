@@ -1,7 +1,7 @@
 {
 	"id": "accent-theme-customizer",
 	"name": "Accent and Theme Customizer",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "1.0.0",
 	"description": "Allows you to assign different accent colors and themes to different folders",
 	"author": "Miłosz Lamański",
